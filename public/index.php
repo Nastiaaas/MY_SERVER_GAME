@@ -39,6 +39,6 @@ try {
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
-    <p><?php $err ?></p>
+    <p> Статус MongoDB: <?php echo $err; ?></p>
 </body>
 </html>

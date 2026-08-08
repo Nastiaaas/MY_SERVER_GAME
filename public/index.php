@@ -39,6 +39,6 @@ try {
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
-
+    <p><?php $err ?></p>
 </body>
 </html>

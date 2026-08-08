@@ -36,7 +36,7 @@ class GameServer implements MessageComponentInterface {
     private MongoDB\Collection $users;
 
     public function __construct($redisSub, $redisPub) {
-        $mongoGamer = new MongoDB\Gamer(URI, URI_OPTIONS);
+        $mongoGamer = new MongoDB\Client(URI, URI_OPTIONS);
         try {
             $this->mongoDB = $mongoGamer->getDatabase("game_data");
             $this->users = $this->mongoDB->selectCollection("gamers");

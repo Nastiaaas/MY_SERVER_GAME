@@ -2,7 +2,6 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Clue\React\Redis\RedisClient;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
@@ -31,7 +30,8 @@ const URI = 'mongodb://127.0.0.1:27017';
 const URI_OPTIONS = ['ServerSelectionTimeoutMS' => 10000];
 
 class GameServer implements MessageComponentInterface {
-    private RedisClient $redisPub;
+    private $redisPub;
+    private array $clients = [];
     private MongoDB\Database $mongoDB;
     private MongoDB\Collection $users;
 
@@ -65,7 +65,7 @@ class GameServer implements MessageComponentInterface {
     }
 
     public function onClose(ConnectionInterface $conn): void {
-        // ToDo
+        unset($this->clients[$conn->resourceId]);
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e): void {
@@ -76,8 +76,9 @@ class GameServer implements MessageComponentInterface {
 
 Loop::get()->futureTick(function () {
 
-    $redisSub = new RedisClient('redis://127.0.0.1:6379');
-    $redisPub = new RedisClient('redis://127.0.0.1:6379');
+    $factory = new Clue\React\Redis\Factory(Loop::get());
+    $redisSub = $factory->createLazyClient('127.0.0.1:6379');
+    $redisPub = $factory->createLazyClient('127.0.0.1:6379');
 
     $gameServer = new GameServer($redisSub, $redisPub);
 

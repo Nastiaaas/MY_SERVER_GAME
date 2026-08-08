@@ -52,6 +52,20 @@ class GameServer implements MessageComponentInterface {
         });
 
         echo "Server started\n";
+
+        Loop::get()->addPeriodicTimer(30, function () {
+            $this->heartbeatPing();
+        });
+
+        echo "ping is heree";
+    }
+
+    private function heartbeatPing(): void
+    {
+        $pingmsg = json_encode(['type' => 'ping']);
+        foreach ($this->clients as $client) {
+            $client->getCon()->send($pingmsg);
+        }
     }
 
     public function onOpen(ConnectionInterface $conn): void

@@ -57,6 +57,7 @@ class GameServer implements MessageComponentInterface {
     public function onOpen(ConnectionInterface $conn): void
     {
         $client = new Client($conn);
+        $this->clients[$conn->resourceId] = $client;
     }
 
     public function onMessage(ConnectionInterface $from, $msg): void {
@@ -75,9 +76,8 @@ class GameServer implements MessageComponentInterface {
 
 Loop::get()->futureTick(function () {
 
-    $factory = new Clue\React\Redis\Factory(Loop::get());
-    $redisSub = $factory->createLazyClient('localhost:6379');
-    $redisPub = $factory->createLazyClient('localhost:6379');
+    $redisSub = new RedisClient('redis://127.0.0.1:6379');
+    $redisPub = new RedisClient('redis://127.0.0.1:6379');
 
     $gameServer = new GameServer($redisSub, $redisPub);
 

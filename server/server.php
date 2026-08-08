@@ -64,7 +64,7 @@ class GameServer implements MessageComponentInterface {
     {
         $pingmsg = json_encode(['type' => 'ping']);
         foreach ($this->clients as $client) {
-            $client->getCon()->send($pingmsg);
+            $client->getConn()->send($pingmsg);
         }
     }
 

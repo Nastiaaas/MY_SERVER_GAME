@@ -1,0 +1,7 @@
+{
+    "require": {
+        "cboden/ratchet": "^0.4.4",
+        "mongodb/mongodb": "^2.1",
+        "predis/predis": "^3.5"
+    }
+}

@@ -75,8 +75,9 @@ class GameServer implements MessageComponentInterface {
 
 Loop::get()->futureTick(function () {
 
-    $redisSub = new RedisClient('localhost:6379');
-    $redisPub = new RedisClient('localhost:6379');
+    $factory = new Clue\React\Redis\Factory(Loop::get());
+    $redisSub = $factory->createLazyClient('localhost:6379');
+    $redisPub = $factory->createLazyClient('localhost:6379');
 
     $gameServer = new GameServer($redisSub, $redisPub);
 

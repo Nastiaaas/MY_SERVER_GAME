@@ -47,7 +47,7 @@ try {
 </head>
 <body>
     <p>MongoDB: <?php echo $err; ?></p>
-    <p>MongoDB: <?php echo $err; ?></p>
+    <p>Resis: <?php echo $Rstatus; ?></p>
 
     <div style="display: flex; gap: 50px;">
         <div id = "auth">

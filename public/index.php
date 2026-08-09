@@ -3,15 +3,22 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$redis = new Redis();
-$redis->connect('127.0.0.1', 6379);
+$Rstatus = '';
 
-$event = [
-        'action' => 'init',
-];
-$channel = 'internal';
-$redis->publish($channel, json_encode($event));
+try {
+    $redis = new Redis();
+    $redis->connect('127.0.0.1', 6379);
 
+    $event = [
+            'action' => 'init',
+    ];
+    $channel = 'internal';
+    $redis->publish($channel, json_encode($event));
+    $Rstatus = 'success';
+
+} catch (Exception $exception) {
+    $Rstatus = $exception->getMessage();
+}
 $uri = 'mongodb://127.0.0.1:27017';
 $uriOptions = ['ServerSelectionTimeoutMS' => 10000];
 $mongoClient = new MongoDB\Client($uri, $uriOptions);
@@ -39,6 +46,7 @@ try {
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
+    <p>MongoDB: <?php echo $err; ?></p>
     <p>MongoDB: <?php echo $err; ?></p>
 
     <div style="display: flex; gap: 50px;">

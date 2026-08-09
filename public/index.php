@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <?php
 
+session_start();
+
 require __DIR__ . '/../vendor/autoload.php';
 
 $Rstatus = '';
@@ -47,7 +49,18 @@ try {
 </head>
 <body>
     <p>MongoDB: <?php echo $err; ?></p>
-    <p>Resis: <?php echo $Rstatus; ?></p>
+    <p>Redis: <?php echo $Rstatus; ?></p>
+
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+
+        <div style="padding: 20px; border: 2px solid green; display: inline-block;">
+            <h2>Добро пожаловать, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
+            <p><strong>Ваш User ID:</strong> <?php echo htmlspecialchars($_SESSION['user_id']); ?></p>
+            <p><strong>Ваш Session ID:</strong> <?php echo session_id(); ?></p>
+            <p>Статус: Авторизован</p>
+        </div>
+
+    <?php else: ?>
 
     <div style="display: flex; gap: 50px;">
         <div id = "auth">
@@ -72,5 +85,6 @@ try {
         </div>
         </div>
     </div>
+    <?php endif; ?>
 </body>
 </html>

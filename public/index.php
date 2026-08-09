@@ -62,6 +62,7 @@ try {
             </form>
             <p style="margin-top: 5px;"><a href = "#" id="showLogin"><- back to login</a></p>
         </div>
-        <div>
+        </div>
+    </div>
 </body>
 </html>

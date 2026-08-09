@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 require __DIR__ . '/../vendor/autoload.php';
 
 $uri = 'mongodb://127.0.0.1:27017';
@@ -18,14 +21,19 @@ if (empty($username) || empty($password)) {
 }
 $existUser = $chat->findOne(['username' => $username]);
 if ($existUser) {
-    die(json_encode(['status' => false]));
+    die(json_encode(['status' => false, 'message'=> 'Username already exists!']));
 }
 
 $hash = md5($password);
 
-$chat->insertOne([
+$result = $chat->insertOne([
     'username' => $username,
     'password' => $hash,
 ]);
-echo json_encode(['status' => 'success', 'message' => 'success']);
+session_regenerate_id(true);
+$_SESSION['user_id'] = (string)$result->getInsertedId();
+$_SESSION['username'] = $username;
+$_SESSION['logged_in'] = true;
+
+echo json_encode(['status' => 'success', 'message' => 'success', 'session_id' => session_id()]);
 }

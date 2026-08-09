@@ -7,6 +7,7 @@ use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
+use Clue\React\Redis\Factory;
 
 use React\EventLoop\Loop;
 use React\Socket\SocketServer;
@@ -45,9 +46,10 @@ class GameServer implements MessageComponentInterface {
         }
 
         $this->redisPub = $redisPub;
-        $redisSub->subscribe('game_events');
+        $redisSub->subscribe('internal');
 
         $redisSub->on('message', function ($channel, $message) {
+            echo "Новое сообщение из Redis (Канал: {$channel}): {$message}\n";
             $msg = var_export(json_decode($message, true), true);
         });
 

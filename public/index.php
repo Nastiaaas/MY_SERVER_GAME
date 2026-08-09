@@ -40,5 +40,27 @@ try {
 </head>
 <body>
     <p> Статус MongoDB: <?php echo $err; ?></p>
+
+    <div style="display: flex; gap: 50px;">
+        <!-- Форма авторизации -->
+        <div>
+            <h2>Вход (Login)</h2>
+            <form method="POST" action="login.php">
+                <div><input type="text" name="username" placeholder="Логин" required></div>
+                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="Пароль" required></div>
+                <div style="margin-top: 5px;"><button type="submit">Войти</button></div>
+            </form>
+        </div>
+
+        <!-- Форма регистрации -->
+        <div>
+            <h2>Регистрация (Register)</h2>
+            <form method="POST" action="register.php">
+                <div><input type="text" name="username" placeholder="Новый логин" required></div>
+                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="Пароль" required></div>
+                <div style="margin-top: 5px;"><button type="submit">Зарегистрироваться</button></div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

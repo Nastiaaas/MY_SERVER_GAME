@@ -61,15 +61,17 @@ try {
         </div>
 
         <script>
-            // 1. Берем session_id, который PHP передает в шаблон
+            // 1. Берем session_id из PHP
             const sessionId = "<?php echo session_id(); ?>";
 
-            // 2. Инициируем HTTP-запрос с заголовком Upgrade до WebSocket
-            // Сервер на Ratchet сам обработает Upgrade
-            const ws = new WebSocket("ws://127.0.0.1:8080?session_id=" + sessionId);
+            // 2. Берем текущий IP/домен, на котором открыт сайт (например, 144.31.17.150)
+            const serverHost = window.location.hostname;
+
+            // 3. Подключаемся к WebSocket на правильный адрес
+            const ws = new WebSocket("ws://" + serverHost + ":8080?session_id=" + sessionId);
 
             ws.onopen = function(e) {
-                console.log("Соединение с WebSocket сервером установлено!");
+                console.log("УСПЕХ! Соединение с WebSocket сервером установлено!");
             };
 
             ws.onmessage = function(event) {
@@ -77,11 +79,11 @@ try {
             };
 
             ws.onerror = function(error) {
-                console.log("Ошибка WebSocket: ", error);
+                console.error("Ошибка WebSocket. Проверьте, запущен ли server.php в PuTTY и открыт ли порт 8080.");
             };
 
             ws.onclose = function(event) {
-                console.log("Соединение закрыто", event.code);
+                console.log("Соединение закрыто. Код:", event.code);
             };
         </script>
 

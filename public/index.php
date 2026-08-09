@@ -42,24 +42,26 @@ try {
     <p>MongoDB: <?php echo $err; ?></p>
 
     <div style="display: flex; gap: 50px;">
-
-        <div>
+        <div id = "auth">
+        <div id = "login">
             <h2>Login</h2>
             <form method="POST" action="login.php">
                 <div><input type="text" name="username" placeholder="username" required></div>
                 <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
                 <div style="margin-top: 5px;"><button type="submit">login</button></div>
             </form>
+            <p style="margin-top: 5px;">No account? <a href = "#" id="showRegister"> Register-></a></p>
         </div>
 
-        <div>
+        <div id = "register" style="display: none;">
             <h2>Register</h2>
             <form method="POST" action="register.php">
                 <div><input type="text" name="username" placeholder="username" required></div>
                 <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
                 <div style="margin-top: 5px;"><button type="submit">Register</button></div>
             </form>
+            <p style="margin-top: 5px;"><a href = "#" id="showLogin"><- back to login</a></p>
         </div>
-    </div>
+        <div>
 </body>
 </html>

@@ -15,6 +15,8 @@ use React\Socket\SocketServer;
 // connection data
 class Client {
     private ConnectionInterface $conn;
+    private ?string $user_id = null;
+    private bool $isTrusted = false;
     public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
@@ -25,8 +27,20 @@ class Client {
     public function getConn(): ConnectionInterface {
         return $this->conn;
     }
-}
+    public function setIsTrusted(bool $isTrusted): void {
+        $this->isTrusted = $isTrusted;
+    }
+    public function getIsTrusted(): bool {
+        return $this->isTrusted;
+    }
+    public function setUserId(string $userId): void {
+        $this->user_id = $userId;
+    }
+    public function getUserId(): ?string {
+        return $this->user_id;
+    }
 
+}
 const URI = 'mongodb://127.0.0.1:27017';
 const URI_OPTIONS = ['ServerSelectionTimeoutMS' => 10000];
 
@@ -66,7 +80,9 @@ class GameServer implements MessageComponentInterface {
     {
         $pingmsg = json_encode(['type' => 'ping']);
         foreach ($this->clients as $client) {
-            $client->getConn()->send($pingmsg);
+            if ($client->getIsTrusted()) {
+                $client->getConn()->send($pingmsg);
+            }
         }
     }
 
@@ -74,10 +90,43 @@ class GameServer implements MessageComponentInterface {
     {
         $client = new Client($conn);
         $this->clients[$conn->resourceId] = $client;
-    }
+
+        $webString = $conn->httpRequest->getUri()->getQuery();
+        parse_str($webString, $webArray);
+        $sessionID = $webArray['session_id'] ?? null;
+
+
+        if (!$sessionID) {
+            echo "error";
+            $conn->close();
+            return;
+        }
+
+        $this->redisPub->get($sessionID)->then(function ($userId) use ($conn, $client,$sessionID) {
+            if($userId !== null && $userId !== false) {
+                $client->setUserId((string)$userId);
+                $client->setIsTrusted(true);
+                echo "success";
+
+    } else {
+                echo "error";
+                $conn->close();
+            }
+        },
+            function (\Exception $e) use ($conn) {
+            echo "error";
+            $conn->close();
+        }
+        );
+}
 
     public function onMessage(ConnectionInterface $from, $msg): void {
-        // ToDo
+        $client = $this->clients[$from->resourceId] ?? null;
+
+        if (!$client || !$client->getIsTrusted()) {
+            echo "ignore";
+            return;
+        }
     }
 
     public function onClose(ConnectionInterface $conn): void {

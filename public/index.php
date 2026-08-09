@@ -61,29 +61,26 @@ try {
         </div>
 
         <script>
-            // 1. Берем session_id из PHP
             const sessionId = "<?php echo session_id(); ?>";
 
-            // 2. Берем текущий IP/домен, на котором открыт сайт (например, 144.31.17.150)
-            const serverHost = window.location.hostname;
+            const currecntIp = window.location.hostname;
 
-            // 3. Подключаемся к WebSocket на правильный адрес
-            const ws = new WebSocket("ws://" + serverHost + ":8080?session_id=" + sessionId);
+            const ws = new WebSocket("ws://" + currecntIp + ":8080?session_id=" + sessionId);
 
             ws.onopen = function(e) {
-                console.log("УСПЕХ! Соединение с WebSocket сервером установлено!");
+                console.log("Websocket good!");
             };
 
             ws.onmessage = function(event) {
-                console.log("Сообщение от сервера: ", event.data);
+                console.log("message: ", event.data);
             };
 
             ws.onerror = function(error) {
-                console.error("Ошибка WebSocket. Проверьте, запущен ли server.php в PuTTY и открыт ли порт 8080.");
+                console.error("Error.");
             };
 
             ws.onclose = function(event) {
-                console.log("Соединение закрыто. Код:", event.code);
+                console.log("Connection closed. code:", event.code);
             };
         </script>
 

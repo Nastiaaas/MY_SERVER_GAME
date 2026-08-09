@@ -10,16 +10,15 @@ $chat = $mongoDB->selectCollection("users");
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST["username"] ?? null);
-    $password = trim($_POST["password"] ?? null);
-}
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
 
 if (empty($username) || empty($password)) {
-    http_response_code(400); //хз
+    die(json_encode(['status' => false]));
 }
 $existUser = $chat->findOne(['username' => $username]);
 if ($existUser) {
-    http_response_code(400);
+    die(json_encode(['status' => false]));
 }
 
 $hash = md5($password);
@@ -28,4 +27,5 @@ $chat->insertOne([
     'username' => $username,
     'password' => $hash,
 ]);
-http_response_code(200);
+echo json_encode(['status' => 'success', 'message' => 'success']);
+}

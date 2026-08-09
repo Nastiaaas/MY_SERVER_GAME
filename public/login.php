@@ -11,18 +11,19 @@ $chat = $mongoDB->selectCollection("users");
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST["username"] ?? null);
-    $password = trim($_POST["password"] ?? null);
-}
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
 
-$hash = md5($password);
+    $hash = md5($password);
 
-$gamer = $chat->findOne([
-    'username' => $username,
-    'password' => $hash]);
+    $gamer = $chat->findOne([
+        'username' => $username,
+        'password' => $hash]);
 
-if ($gamer) {
-    session_start();
-}else {
-    echo json_encode(['status' => false]);
+    if ($gamer) {
+        echo json_encode(['status' => true]);
+        session_start();
+    } else {
+        echo json_encode(['status' => false]);
+    }
 }

@@ -39,26 +39,25 @@ try {
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
-    <p> Статус MongoDB: <?php echo $err; ?></p>
+    <p>MongoDB: <?php echo $err; ?></p>
 
     <div style="display: flex; gap: 50px;">
-        <!-- Форма авторизации -->
+
         <div>
-            <h2>Вход (Login)</h2>
+            <h2>Login</h2>
             <form method="POST" action="login.php">
-                <div><input type="text" name="username" placeholder="Логин" required></div>
-                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="Пароль" required></div>
-                <div style="margin-top: 5px;"><button type="submit">Войти</button></div>
+                <div><input type="text" name="username" placeholder="username" required></div>
+                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
+                <div style="margin-top: 5px;"><button type="submit">login</button></div>
             </form>
         </div>
 
-        <!-- Форма регистрации -->
         <div>
-            <h2>Регистрация (Register)</h2>
+            <h2>Register</h2>
             <form method="POST" action="register.php">
-                <div><input type="text" name="username" placeholder="Новый логин" required></div>
-                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="Пароль" required></div>
-                <div style="margin-top: 5px;"><button type="submit">Зарегистрироваться</button></div>
+                <div><input type="text" name="username" placeholder="username" required></div>
+                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
+                <div style="margin-top: 5px;"><button type="submit">Register</button></div>
             </form>
         </div>
     </div>

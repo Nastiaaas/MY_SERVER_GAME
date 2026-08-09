@@ -60,6 +60,31 @@ try {
             <p>Статус: Авторизован</p>
         </div>
 
+        <script>
+            // 1. Берем session_id, который PHP передает в шаблон
+            const sessionId = "<?php echo session_id(); ?>";
+
+            // 2. Инициируем HTTP-запрос с заголовком Upgrade до WebSocket
+            // Сервер на Ratchet сам обработает Upgrade
+            const ws = new WebSocket("ws://127.0.0.1:8080?session_id=" + sessionId);
+
+            ws.onopen = function(e) {
+                console.log("Соединение с WebSocket сервером установлено!");
+            };
+
+            ws.onmessage = function(event) {
+                console.log("Сообщение от сервера: ", event.data);
+            };
+
+            ws.onerror = function(error) {
+                console.log("Ошибка WebSocket: ", error);
+            };
+
+            ws.onclose = function(event) {
+                console.log("Соединение закрыто", event.code);
+            };
+        </script>
+
     <?php else: ?>
 
     <div style="display: flex; gap: 50px;">

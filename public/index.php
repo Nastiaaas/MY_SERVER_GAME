@@ -83,7 +83,7 @@ try {
                 <button type="submit" class="btn btn-submit">Send</button>
             </form>
             <p class="footer-text">
-                Don't have an account? <a href="#" onclick="register()" class="link">Register here</a>
+                Don't have an account? <a href="#" onclick="showRegister" class="link">Register here</a>
             </p>
         </div>
     </div>
@@ -107,10 +107,11 @@ try {
                     <label for="password2" class="form-label">Retype password:</label>
                     <input class="form-input" type="password" id="password2" name="password2" required>
                 </div>
-
-                <!-- Исправлено: type="submit" для отправки данных на register.php -->
                 <button type="submit" class="btn btn-submit">Send</button>
             </form>
+            <p class="footer-text">
+                Already have an account? <a href="#" id="showLogin" class="link">Login here</a>
+            </p>
         </div>
     </div>
 <?php endif; ?>

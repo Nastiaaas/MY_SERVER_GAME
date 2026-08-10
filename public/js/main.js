@@ -2,12 +2,12 @@ $(document).ready(function() {
     $('#showRegister').click(function(e) {
         e.preventDefault();
         $('#login').hide();
-        $('#register').show();
+        $('#registration').show();
     });
 
     $('#showLogin').click(function(e) {
         e.preventDefault();
-        $('#register').hide();
+        $('#registration').hide();
         $('#login').show();
     });
 });

@@ -1,14 +1,14 @@
 $(document).ready(function() {
     $('#showRegister').click(function(e) {
         e.preventDefault();
-        $('#login').hide();
-        $('#registration').show();
+        $('#login').addClass('hidden');
+        $('#registration').removeClass('hidden');
     });
 
     $('#showLogin').click(function(e) {
         e.preventDefault();
-        $('#registration').hide();
-        $('#login').show();
+        $('#registration').addClass('hidden');
+        $('#login').removeClass('hidden');
     });
 });
 

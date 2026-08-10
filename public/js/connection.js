@@ -28,33 +28,22 @@ let otherUsers = [];
 // Function that gets activated by ws.onmessage
 function arrangeData(inputDataObject) {
     if (inputDataObject.type === 'ping') return;
-    if (inputDataObject.length === undefined) {
-        if (inputDataObject.username == CURRENT_USER_NAME) {
-            currentUser.isHunter = inputDataObject.isHunter;
-            currentUser.playerId = inputDataObject.playerId;
-            pos.x = inputDataObject.x;
-            pos.y = inputDataObject.y;
-            otherUsers[inputDataObject.playerId] = {username: undefined};
-        } else {
-            if (inputDataObject.username === undefined){
-                otherUsers[inputDataObject.playerId] = {username: undefined};
-            } else {
-                otherUsers[inputDataObject.playerId] = inputDataObject;
-            }
-        }
-    } else {
-        for(let i = 0; i < inputDataObject.length; ++i){
+
+    if (inputDataObject.length !== undefined) {
+        // Очищаем массив на каждый тик сервера, чтобы убрать отключившихся
+        otherUsers = [];
+
+        for(let i = 0; i < inputDataObject.length; ++i) {
             if (inputDataObject[i].username == CURRENT_USER_NAME) {
                 currentUser.isHunter = inputDataObject[i].isHunter;
                 currentUser.playerId = inputDataObject[i].playerId;
-                pos.x = inputDataObject[i].x;
-                pos.y = inputDataObject[i].y;
-                otherUsers[inputDataObject[i].playerId] = {username: undefined}
+                // Сервер не должен жестко переписывать позицию клиента,
+                // если вы используете клиентское предсказание движения
+                // pos.x = inputDataObject[i].x;
+                // pos.y = inputDataObject[i].y;
             } else {
-                if (inputDataObject[i].username === undefined){
-                    otherUsers[inputDataObject[i].playerId] = {username: undefined}
-                } else {
-                    otherUsers[inputDataObject[i].playerId] = inputDataObject[i];
+                if (inputDataObject[i].username !== undefined) {
+                    otherUsers.push(inputDataObject[i]); // Добавляем без пропусков индексов
                 }
             }
         }

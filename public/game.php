@@ -26,7 +26,6 @@ if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
 
     <script src="js/connection.js"></script>
     <script src="js/game.js"></script>
-    <script src="js/gamemenu.js"></script>
 
 
     <style type="text/css">

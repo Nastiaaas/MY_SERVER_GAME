@@ -4,7 +4,7 @@ let lab_boxes;
 let playerStatus;
 let playerNicnames;
 let otherNicknames = [];
-let lastServerUpdate;
+let lastServerUpdate = 0;
 let lastTickMoment;
 
 let phoneMovment = true;
@@ -22,19 +22,18 @@ const renderDesync = {x:0.5, y:0.5};
 let mouse = {x:0, y:0};
 
 let lab;
+let game;
+let currentSize = {width:document.documentElement.clientWidth, height:document.documentElement.clientHeight};
 async function loadFile() {
-    const response = await fetch("../assets/lab.json");
-    lab = await response.json();  
+    const response = await fetch("assets/lab.json");
+    lab = await response.json();
+
+    game = new ScratchGame(currentSize.width, currentSize.height);
+    game.preload = preload;
+    game.create = create;
+    game.update = update;
 }
 loadFile();
-
-
-let currentSize = {width:document.documentElement.clientWidth, height:document.documentElement.clientHeight};
-
-let game = new ScratchGame(currentSize.width, currentSize.height);
-game.preload = preload;
-game.create = create;
-game.update = update;
 
 function preload() {
     game.loadSpritesheet('box', 'assets/box.png', 20, 20);
@@ -104,6 +103,11 @@ function mouseUpdates() {
 }
 
 function playerUpdates() {
+    if(currentUser.onHold) {
+        allowMovment = false;
+    } else {
+        allowMovment = true;
+    }
     if(allowMovment){
         let hasMoved = false;
         let overrideAutoMovement = game.isKeyDown('W') || game.isKeyDown('A') || game.isKeyDown('S') || game.isKeyDown('D') || game.isKeyDown('UP') || game.isKeyDown('LEFT') || game.isKeyDown('DOWN') || game.isKeyDown('UP');

@@ -1,11 +1,35 @@
+
+const ws = new WebSocket("ws://" + currecntIp + ":8080?session_id=" + sessionId);
+
+ws.onopen = function(e) {
+    console.log("Websocket good!");
+};
+
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log("message: ", event.data);
+    arrangeData(data);
+};
+
+ws.onerror = function(error) {
+    console.error("Error.");
+};
+
+ws.onclose = function(event) {
+    console.log("Connection closed. code:", event.code);
+};
+
+
+
 let pos = {x:49.5, y:48.5};
 let currentUser = {isHunter:false, username:"YOU", playerId: undefined};
 let otherUsers = [];
 
 // Function that gets activated by ws.onmessage
 function arrangeData(inputDataObject) {
+    if (inputDataObject.type === 'ping') return;
     if (inputDataObject.length === undefined) {
-        if (inputDataObject.username == currentUser.username) {
+        if (inputDataObject.username == CURRENT_USER_NAME) {
             currentUser.isHunter = inputDataObject.isHunter;
             currentUser.playerId = inputDataObject.playerId;
             pos.x = inputDataObject.x;
@@ -20,7 +44,7 @@ function arrangeData(inputDataObject) {
         }
     } else {
         for(let i = 0; i < inputDataObject.length; ++i){
-            if (inputDataObject[i].username == currentUser.username) {
+            if (inputDataObject[i].username == CURRENT_USER_NAME) {
                 currentUser.isHunter = inputDataObject[i].isHunter;
                 currentUser.playerId = inputDataObject[i].playerId;
                 pos.x = inputDataObject[i].x;
@@ -39,24 +63,19 @@ function arrangeData(inputDataObject) {
 
 //Output gets sent to ws.send
 function sendData() {
-    outputData = {x:pos.x, y:pos.y, username:currentUser.username, playerId: currentUser.playerId};
+    outputData = {x:pos.x, y:pos.y, username:CURRENT_USER_NAME, playerId: currentUser.playerId};
     console.log(outputData);
+
+    if(ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(outputData));
+    }
     // transmit output data via vss
 }
 
-//Removes the player from /game.html(.php) if they are not connected to the server
+//Removes the player from /game.php(.php) if they are not connected to the server
 function onDisconnect(){
     window.location.href = "/";
 }
-
-//Test data
-arrangeData([
-    {x:22, y:2, isHunter: false, username:"TheAvreageBot", playerId:0, onHold:true},
-    {x:64, y:30, isHunter: true, username:"mMeneske", playerId:1, onHold:true},
-    {x:40, y:38, isHunter: true, username:"10x Engineer", playerId:2, onHold:false},
-    {x:49.5, y:48.5, isHunter:false, username:"YOU", playerId: 3}
-]);
-
 
 //arrangeData({x:49.5, y:47.5, isHunter:false, username:"YOU", playerId: 3});
 

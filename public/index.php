@@ -35,8 +35,6 @@ try {
 }catch (\Exception $e){
     $err = 'error' . $e->getMessage();
 }
-// ToDo
-// $messages = $chat->find([], ['sort' => ['_id' => -1]]);
 ?>
 <html lang="en">
 <head>
@@ -48,67 +46,74 @@ try {
     <link href="css/main.css" rel="stylesheet">
 </head>
 <body>
+<!--
     <p>MongoDB: <?php echo $err; ?></p>
     <p>Redis: <?php echo $Rstatus; ?></p>
+    -->
 
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
 
-        <div style="padding: 20px; border: 2px solid green; display: inline-block;">
-            <h2>Добро пожаловать, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
-            <p><strong>Ваш User ID:</strong> <?php echo htmlspecialchars($_SESSION['user_id']); ?></p>
-            <p><strong>Ваш Session ID:</strong> <?php echo session_id(); ?></p>
-            <p>Статус: Авторизован</p>
+        <div id="start-screen" class="modal-overlay hidden">
+            <div class="modal-card modal-card-dark text-center">
+                <h1 class="game-title">MAZE GAME</h1>
+                <p class="game-instructions">
+                    Use <span class="highlight-text">WASD</span> keys to navigate the maze.
+                </p>
+                <a href="game.php">
+                    <button onclick="startGame()" class="btn btn-submit">PLAY</button>
+                </a>
+
+            </div>
         </div>
-
-        <script>
-            const sessionId = "<?php echo session_id(); ?>";
-
-            const currecntIp = window.location.hostname;
-
-            const ws = new WebSocket("ws://" + currecntIp + ":8080?session_id=" + sessionId);
-
-            ws.onopen = function(e) {
-                console.log("Websocket good!");
-            };
-
-            ws.onmessage = function(event) {
-                console.log("message: ", event.data);
-            };
-
-            ws.onerror = function(error) {
-                console.error("Error.");
-            };
-
-            ws.onclose = function(event) {
-                console.log("Connection closed. code:", event.code);
-            };
-        </script>
-
     <?php else: ?>
+        <div id="login" class="modal-overlay">
+            <div class="modal-card text-center">
+                <h1 class="modal-title">Login</h1>
+                <form method="post" action="login.php" class="form-layout">
+                    <div class="form-group">
+                        <label for="login-username" class="form-label">Username:</label>
+                        <input class="form-input" type="text" id="login-username" name="username">
+                    </div>
 
-    <div style="display: flex; gap: 50px;">
-        <div id = "auth">
-        <div id = "login">
-            <h2>Login</h2>
-            <form method="POST" action="login.php">
-                <div><input type="text" name="username" placeholder="username" required></div>
-                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
-                <div style="margin-top: 5px;"><button type="submit">login</button></div>
-            </form>
-            <p style="margin-top: 5px;">No account? <a href = "#" id="showRegister"> Register-></a></p>
+                    <div class="form-group">
+                        <label for="login-password" class="form-label">Password:</label>
+                        <input class="form-input" type="password" id="login-password" name="password">
+                    </div>
+
+                    <input onclick="startScreen()" class="btn btn-submit" type="button" value="Send">
+                </form>
+                <p class="footer-text">
+                    Don't have an account? <a href="#" onclick="register()" class="link">Register here</a>
+                </p>
+            </div>
         </div>
 
-        <div id = "register" style="display: none;">
-            <h2>Register</h2>
-            <form method="POST" action="register.php">
-                <div><input type="text" name="username" placeholder="username" required></div>
-                <div style="margin-top: 5px;"><input type="password" name="password" placeholder="password" required></div>
-                <div style="margin-top: 5px;"><button type="submit">Register</button></div>
-            </form>
-            <p style="margin-top: 5px;"><a href = "#" id="showLogin"><- back to login</a></p>
+
+        <div id="registration" class="modal-overlay hidden">
+            <div class="modal-card text-left">
+                <h1 class="modal-title">Registration</h1>
+                <form method="post" action="register.php" class="form-layout">
+
+                    <div class="form-group">
+                        <label for="reg-username" class="form-label">Username:</label>
+                        <input class="form-input" type="text" id="reg-username" name="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password" class="form-label">Password:</label>
+                        <input class="form-input" type="password" id="reg-password" name="password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password2" class="form-label">Retype password:</label>
+                        <input class="form-input" type="password" id="password2" name="password2">
+                    </div>
+
+                    <input onclick="startScreen()" class="btn btn-submit" type="button" value="Send">
+                </form>
+            </div>
         </div>
-        </div>
-    </div>
+
     <?php endif; ?>
 </body>
 </html>

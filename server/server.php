@@ -11,12 +11,17 @@ use Clue\React\Redis\Factory;
 
 use React\EventLoop\Loop;
 use React\Socket\SocketServer;
-
 // connection data
 class Client {
     private ConnectionInterface $conn;
     private ?string $user_id = null;
     private bool $isTrusted = false;
+    public float $x = 49.5;
+    public float $y = 48.5;
+    public bool $isHunter = false;
+    public int $stunEndTime = 0;
+    public bool $onHold = false;
+
     public function __construct(ConnectionInterface $conn)
     {
         $this->conn = $conn;
@@ -51,6 +56,8 @@ class GameServer implements MessageComponentInterface {
     private MongoDB\Collection $users;
 
     public function __construct($redisSub, $redisPub) {
+        $map = file_get_contents(__DIR__ . '/assets/lab.json');
+        $this->maze = json_decode($map, true);
         $mongoGamer = new MongoDB\Client(URI, URI_OPTIONS);
         try {
             $this->mongoDB = $mongoGamer->getDatabase("game_data");
@@ -121,14 +128,62 @@ class GameServer implements MessageComponentInterface {
 }
 
     public function onMessage(ConnectionInterface $from, $msg): void {
+
+
+        $data = json_decode($msg, true);
         $client = $this->clients[$from->resourceId] ?? null;
+        $player = $this->clients[$from->resourceId] ?? null;
 
         if (!$client || !$client->getIsTrusted()) {
             echo "ignore";
             return;
         }
-    }
 
+        if($player->stunEndTime > time()) {
+            return;
+        }
+
+        $player->x = $data['x'];
+        $player->y = $data['y'];
+
+        if($player->isHunter) {
+            foreach ($this->clients as $otherplayers) {
+                if($otherplayers->getConn()->resourceId !== $player->getConn()->resourceId && !$otherplayers->isHunter) {
+                    $dx = $player->x - $otherplayers->x;
+                    $dy = $player->y - $otherplayers->y;
+                    $dist = sqrt($dx * $dx + $dy * $dy);
+
+                    if ($dist < 1.5) {
+                        $player->isHunter = false;
+                        $otherplayers->isHunter = true;
+                        $otherplayers->stunEndTime = time() + 5;
+                        $otherplayers->onHold = true;
+                    }
+                }
+            }
+        }
+
+        $gameState = [];
+        foreach ($this->clients as $c) {
+            if($c->getIsTrusted()) {
+                $gameState[] = [
+                    'playerId' => $c->getConn()->resourceId,
+                    'username' => $c->getUserId(),
+                    'x' => $c->x,
+                    'y' => $c->y,
+                    'isHunter' => $c->isHunter,
+                    'onHold' => $c->onHold,
+                ];
+            }
+        }
+
+        $broadcastData = json_encode($gameState);
+        foreach ($this->clients as $c) {
+            if($c->getIsTrusted()) {
+                $c->getConn()->send($broadcastData);
+            }
+        }
+    }
     public function onClose(ConnectionInterface $conn): void {
         unset($this->clients[$conn->resourceId]);
     }

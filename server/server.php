@@ -56,7 +56,7 @@ class GameServer implements MessageComponentInterface {
     private MongoDB\Collection $users;
 
     public function __construct($redisSub, $redisPub) {
-        $map = file_get_contents(__DIR__ . '/../assets/lab.json');
+        $map = file_get_contents(__DIR__ . '/../public/assets/lab.json');
         $this->maze = json_decode($map, true);
         $mongoGamer = new MongoDB\Client(URI, URI_OPTIONS);
         try {

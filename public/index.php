@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <?php
-
 session_start();
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -21,6 +20,7 @@ try {
 } catch (Exception $exception) {
     $Rstatus = $exception->getMessage();
 }
+
 $uri = 'mongodb://127.0.0.1:27017';
 $uriOptions = ['ServerSelectionTimeoutMS' => 10000];
 $mongoClient = new MongoDB\Client($uri, $uriOptions);
@@ -32,13 +32,13 @@ try {
 
     $mongoDB = $mongoClient->getDatabase("game_data");
     $chat = $mongoDB->selectCollection("users");
-}catch (\Exception $e){
+} catch (\Exception $e) {
     $err = 'error' . $e->getMessage();
 }
 ?>
 <html lang="en">
 <head>
-    <title><!-- To1Do --></title>
+    <title>Maze Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -49,71 +49,70 @@ try {
 <!--
     <p>MongoDB: <?php echo $err; ?></p>
     <p>Redis: <?php echo $Rstatus; ?></p>
-    -->
+-->
 
-    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-
-        <div id="start-screen" class="modal-overlay hidden">
-            <div class="modal-card modal-card-dark text-center">
-                <h1 class="game-title">MAZE GAME</h1>
-                <p class="game-instructions">
-                    Use <span class="highlight-text">WASD</span> keys to navigate the maze.
-                </p>
-                <a href="game.php">
-                    <button onclick="startGame()" class="btn btn-submit">PLAY</button>
-                </a>
-
-            </div>
+<?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+    <!-- Убран класс hidden, чтобы экран отображался при авторизации -->
+    <div id="start-screen" class="modal-overlay">
+        <div class="modal-card modal-card-dark text-center">
+            <h1 class="game-title">MAZE GAME</h1>
+            <p class="game-instructions">
+                Use <span class="highlight-text">WASD</span> keys to navigate the maze.
+            </p>
+            <a href="game.php" style="text-decoration: none;">
+                <button class="btn btn-submit">PLAY</button>
+            </a>
         </div>
-    <?php else: ?>
-        <div id="login" class="modal-overlay">
-            <div class="modal-card text-center">
-                <h1 class="modal-title">Login</h1>
-                <form method="post" action="login.php" class="form-layout">
-                    <div class="form-group">
-                        <label for="login-username" class="form-label">Username:</label>
-                        <input class="form-input" type="text" id="login-username" name="username">
-                    </div>
+    </div>
+<?php else: ?>
+    <div id="login" class="modal-overlay">
+        <div class="modal-card text-center">
+            <h1 class="modal-title">Login</h1>
+            <form method="post" action="login.php" class="form-layout">
+                <div class="form-group">
+                    <label for="login-username" class="form-label">Username:</label>
+                    <input class="form-input" type="text" id="login-username" name="username" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="login-password" class="form-label">Password:</label>
-                        <input class="form-input" type="password" id="login-password" name="password">
-                    </div>
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password:</label>
+                    <input class="form-input" type="password" id="login-password" name="password" required>
+                </div>
 
-                    <input onclick="startScreen()" class="btn btn-submit" type="button" value="Send">
-                </form>
-                <p class="footer-text">
-                    Don't have an account? <a href="#" onclick="register()" class="link">Register here</a>
-                </p>
-            </div>
+                <!-- Исправлено: type="submit" для отправки данных на login.php -->
+                <button type="submit" class="btn btn-submit">Send</button>
+            </form>
+            <p class="footer-text">
+                Don't have an account? <a href="#" onclick="register()" class="link">Register here</a>
+            </p>
         </div>
+    </div>
 
+    <div id="registration" class="modal-overlay hidden">
+        <div class="modal-card text-left">
+            <h1 class="modal-title">Registration</h1>
+            <form method="post" action="register.php" class="form-layout">
 
-        <div id="registration" class="modal-overlay hidden">
-            <div class="modal-card text-left">
-                <h1 class="modal-title">Registration</h1>
-                <form method="post" action="register.php" class="form-layout">
+                <div class="form-group">
+                    <label for="reg-username" class="form-label">Username:</label>
+                    <input class="form-input" type="text" id="reg-username" name="username" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="reg-username" class="form-label">Username:</label>
-                        <input class="form-input" type="text" id="reg-username" name="username">
-                    </div>
+                <div class="form-group">
+                    <label for="reg-password" class="form-label">Password:</label>
+                    <input class="form-input" type="password" id="reg-password" name="password" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="reg-password" class="form-label">Password:</label>
-                        <input class="form-input" type="password" id="reg-password" name="password">
-                    </div>
+                <div class="form-group">
+                    <label for="password2" class="form-label">Retype password:</label>
+                    <input class="form-input" type="password" id="password2" name="password2" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="password2" class="form-label">Retype password:</label>
-                        <input class="form-input" type="password" id="password2" name="password2">
-                    </div>
-
-                    <input onclick="startScreen()" class="btn btn-submit" type="button" value="Send">
-                </form>
-            </div>
+                <!-- Исправлено: type="submit" для отправки данных на register.php -->
+                <button type="submit" class="btn btn-submit">Send</button>
+            </form>
         </div>
-
-    <?php endif; ?>
+    </div>
+<?php endif; ?>
 </body>
 </html>

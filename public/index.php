@@ -83,7 +83,7 @@ try {
                 <button type="submit" class="btn btn-submit">Send</button>
             </form>
             <p class="footer-text">
-                Don't have an account? <a href="#" onclick="showRegister" class="link">Register here</a>
+                Don't have an account? <a href="#" id="showRegister" class="link">Register here</a>
             </p>
         </div>
     </div>

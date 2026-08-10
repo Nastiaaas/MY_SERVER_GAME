@@ -30,20 +30,15 @@ function arrangeData(inputDataObject) {
     if (inputDataObject.type === 'ping') return;
 
     if (inputDataObject.length !== undefined) {
-        // Очищаем массив на каждый тик сервера, чтобы убрать отключившихся
         otherUsers = [];
 
         for(let i = 0; i < inputDataObject.length; ++i) {
             if (inputDataObject[i].username == CURRENT_USER_NAME) {
                 currentUser.isHunter = inputDataObject[i].isHunter;
                 currentUser.playerId = inputDataObject[i].playerId;
-                // Сервер не должен жестко переписывать позицию клиента,
-                // если вы используете клиентское предсказание движения
-                // pos.x = inputDataObject[i].x;
-                // pos.y = inputDataObject[i].y;
             } else {
                 if (inputDataObject[i].username !== undefined) {
-                    otherUsers.push(inputDataObject[i]); // Добавляем без пропусков индексов
+                    otherUsers.push(inputDataObject[i]);
                 }
             }
         }

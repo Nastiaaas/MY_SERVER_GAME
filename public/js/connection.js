@@ -1,5 +1,5 @@
 
-const ws = new WebSocket("ws://" + currecntIp + ":8080?session_id=" + sessionId);
+const ws = new WebSocket("wss://" + window.location.host + "/server/?session_id=" + sessionId);
 
 ws.onopen = function(e) {
     console.log("Websocket good!");

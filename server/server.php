@@ -207,11 +207,17 @@ class GameServer implements MessageComponentInterface {
 
                     if ($dist < 1.5) {
                         $player->isHunter = false;
-                        $otherplayers->isHunter = true;
-                        $otherplayers->stunEndTime = time() + 5;
                         $otherplayers->onHold = true;
+                        $otherplayers->stunEndTime = time() + 5;
                     }
                 }
+            }
+        }
+
+        foreach ($this->clients as $c) {
+            if ($c->onHold && time() >= $c->stunEndTime) {
+                $c->onHold = false;
+                $c->isHunter = true;
             }
         }
 

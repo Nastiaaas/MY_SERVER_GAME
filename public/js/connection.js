@@ -36,6 +36,7 @@ function arrangeData(inputDataObject) {
             if (inputDataObject[i].username == CURRENT_USER_NAME) {
                 currentUser.isHunter = inputDataObject[i].isHunter;
                 currentUser.playerId = inputDataObject[i].playerId;
+                currentUser.onHold = inputDataObject[i].onHold;
             } else {
                 if (inputDataObject[i].username !== undefined) {
                     otherUsers.push(inputDataObject[i]);

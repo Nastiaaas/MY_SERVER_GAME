@@ -91,9 +91,12 @@ function update() {
     otherPlayers.runAll(positionnicks);
 
     text.text = 'X: ' + pos.x + '\nY: ' + pos.y + '\nTPS: ' + tps;
-    playerStatus.text = `${(currentUser.isHunter)? "Status: Hunter" : "Status: Runner"}`;
+    if (currentUser.onHold) {
+        playerStatus.text = "stun: 5 sek"
+    } else {
+        playerStatus.text = `${(currentUser.isHunter) ? "Status: Hunter" : "Status: Runner"}`;
+    }
 }
-
 function mouseUpdates() {
     if (game.isMouseDown() && phoneMovment && allowMovment) {
         mouse.x = game.mouseX / gameScale - player.x / gameScale + pos.x;
@@ -169,7 +172,6 @@ function playerUpdates() {
 
         }
     }
-
     if (currentUser.isHunter){
         player.costume = 0;
         costumeDebug.log("c0");

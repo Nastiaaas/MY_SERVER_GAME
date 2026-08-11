@@ -86,7 +86,10 @@ function update() {
 
     lab_boxes.runAll(positionboxes);
 
-    otherPlayers.createClones(otherUsers.length - otherPlayers.amount(), 0);
+    let clonesneded = otherUsers.length - otherPlayers.amount();
+    if (clonesneded > 0) {
+        otherPlayers.createClones(clonesneded, 0);
+    }
     otherPlayers.runAll(positionclones);
     otherPlayers.runAll(positionnicks);
 

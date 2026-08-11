@@ -22,7 +22,7 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(response) {
                 if(response.status === 'success') {
-                    window.location.href = 'game.php';
+                    window.location.reload();
                 } else {
                     alert('error: ' + response.message);
                 }
@@ -38,7 +38,7 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(response) {
                 if(response.status === 'success') {
-                    window.location.href = 'game.php';
+                    window.location.reload();
                 } else {
                     alert('error: ' + response.message);
                 }

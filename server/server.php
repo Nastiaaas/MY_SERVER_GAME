@@ -104,7 +104,7 @@ class GameServer implements MessageComponentInterface {
         }
     }
 
-    private function timerStart(): void {
+    private function CtimerStart(): void {
         if(!$this->gameStart && !$this->timerStart) {
             $trustedGamers = array_filter($this->clients, fn($c) => $c->getIsTrusted());
 
@@ -151,7 +151,7 @@ class GameServer implements MessageComponentInterface {
             if($userId !== null && $userId !== false) {
                 $client->setUserId((string)$userId);
                 try {
-                    $userDoc = $this->users->findOne(['_id' => new MongoDB\BSON\ObjectID($userId)]);
+                    $userDoc = $this->users->findOne(['_id' => new \MongoDB\BSON\ObjectId($userId)]);
                     if($userDoc) {
                         $client->setUsername($userDoc['username']);
 
@@ -164,6 +164,8 @@ class GameServer implements MessageComponentInterface {
 
                 $client->setIsTrusted(true);
                 echo "success";
+
+                $this->CtimerStart();
 
     } else {
                 echo "error";

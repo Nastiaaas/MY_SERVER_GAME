@@ -277,7 +277,7 @@ Loop::get()->futureTick(function () {
 
     $gameServer = new GameServer($redisSub, $redisPub);
 
-    $socket = new SocketServer('0.0.0.0:8090');
+    $socket = new SocketServer('0.0.0.0:8080');
 
     new IoServer(
         new HttpServer(

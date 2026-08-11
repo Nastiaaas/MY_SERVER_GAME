@@ -20,7 +20,7 @@ if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
 
     <script>
         const sessionId = "<?php echo session_id(); ?>";
-        const CURRENT_USER_NAME = "<?php echo htmlspecialchars($_SESSION['user_id']); ?>";
+        const CURRENT_USER_NAME = "<?php echo htmlspecialchars($_SESSION['username']); ?>";
         const currecntIp = window.location.hostname;
     </script>
 

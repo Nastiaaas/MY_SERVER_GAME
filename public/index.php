@@ -52,7 +52,6 @@ try {
 -->
 
 <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-    <!-- Убран класс hidden, чтобы экран отображался при авторизации -->
     <div id="start-screen" class="modal-overlay">
         <div class="modal-card modal-card-dark text-center">
             <h1 class="game-title">MAZE GAME</h1>
@@ -79,7 +78,6 @@ try {
                     <input class="form-input" type="password" id="login-password" name="password" required>
                 </div>
 
-                <!-- Исправлено: type="submit" для отправки данных на login.php -->
                 <button type="submit" class="btn btn-submit">Send</button>
             </form>
             <p class="footer-text">

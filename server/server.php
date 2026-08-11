@@ -15,6 +15,7 @@ use React\Socket\SocketServer;
 class Client {
     private ConnectionInterface $conn;
     private ?string $user_id = null;
+    private ?string $username = null;
     private bool $isTrusted = false;
     public float $x = 49.5;
     public float $y = 48.5;
@@ -45,6 +46,13 @@ class Client {
         return $this->user_id;
     }
 
+    public function setUsername(string $username): void {
+        $this->username = $username;
+    }
+    public function getUsername(): ?string {
+        return $this->username;
+    }
+
 }
 const URI = 'mongodb://127.0.0.1:27017';
 const URI_OPTIONS = ['ServerSelectionTimeoutMS' => 10000];
@@ -55,13 +63,16 @@ class GameServer implements MessageComponentInterface {
     private MongoDB\Database $mongoDB;
     private MongoDB\Collection $users;
 
+    private bool $gameStart = false;
+    private bool $timerStart = false;
+
     public function __construct($redisSub, $redisPub) {
         $map = file_get_contents(__DIR__ . '/../public/assets/lab.json');
         $this->maze = json_decode($map, true);
         $mongoGamer = new MongoDB\Client(URI, URI_OPTIONS);
         try {
             $this->mongoDB = $mongoGamer->getDatabase("game_data");
-            $this->users = $this->mongoDB->selectCollection("gamers");
+            $this->users = $this->mongoDB->selectCollection("users");
         } catch (MongoDB\Driver\Exception\RuntimeException $e) {
             printf("Failed to ping the MongoDB server: %s\n", $e->getMessage());
         }
@@ -93,6 +104,33 @@ class GameServer implements MessageComponentInterface {
         }
     }
 
+    private function timerStart(): void {
+        if(!$this->gameStart && !$this->timerStart) {
+            $trustedGamers = array_filter($this->clients, fn($c) => $c->getIsTrusted());
+
+            if(count($trustedGamers) > 0) {
+                $this->timerStart = true;
+                echo "timer start\n";
+
+                Loop::get()->addTimer(30, function () {
+                    $this->timerStart = false;
+                    $this->gameStart = true;
+
+                    $actPla = array_filter($this->clients, fn($c) => $c->getIsTrusted());
+                    if(count($actPla) > 0) {
+                        $hunter = array_rand($actPla);
+                        foreach ($actPla as $key => $c) {
+                            $c->isHunter = ($key == $hunter);
+                        }
+                        echo "hunter is here\n";
+                    } else {
+                        $this->gameStart = false;
+                    }
+                });
+            }
+        }
+    }
+
     public function onOpen(ConnectionInterface $conn): void
     {
         $client = new Client($conn);
@@ -112,6 +150,18 @@ class GameServer implements MessageComponentInterface {
         $this->redisPub->get($sessionID)->then(function ($userId) use ($conn, $client,$sessionID) {
             if($userId !== null && $userId !== false) {
                 $client->setUserId((string)$userId);
+                try {
+                    $userDoc = $this->users->findOne(['_id' => new MongoDB\BSON\ObjectID($userId)]);
+                    if($userDoc) {
+                        $client->setUsername($userDoc['username']);
+
+                    } else {
+                        $client->setUsername("Player_" . substr($userId, 0, 4));
+                    }
+                } catch (\Exception $e) {
+                    $client->setUsername("unknown");
+                }
+
                 $client->setIsTrusted(true);
                 echo "success";
 
@@ -168,7 +218,7 @@ class GameServer implements MessageComponentInterface {
             if($c->getIsTrusted()) {
                 $gameState[] = [
                     'playerId' => $c->getConn()->resourceId,
-                    'username' => $c->getUserId(),
+                    'username' => $c->getUsername(),
                     'x' => $c->x,
                     'y' => $c->y,
                     'isHunter' => $c->isHunter,
@@ -186,6 +236,13 @@ class GameServer implements MessageComponentInterface {
     }
     public function onClose(ConnectionInterface $conn): void {
         unset($this->clients[$conn->resourceId]);
+
+        $trustedCount = count(array_filter($this->clients, fn($c) => $c->getIsTrusted()));
+        if($trustedCount === 0) {
+            $this->gameStart = false;
+            $this->timerStart = false;
+            echo "All players have been disconnected\n";
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e): void {

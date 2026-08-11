@@ -243,13 +243,23 @@ class GameServer implements MessageComponentInterface {
         }
     }
     public function onClose(ConnectionInterface $conn): void {
-        unset($this->clients[$conn->resourceId]);
+        $disGamer = $this->clients[$conn->resourceId] ?? null;
+        $wereHunter = $disGamer ? $disGamer->isHunter : false;
 
-        $trustedCount = count(array_filter($this->clients, fn($c) => $c->getIsTrusted()));
+        unset($this->clients[$conn->resourceId]);
+        $trustGamers = array_filter($this->clients, fn($c) => $c->getIsTrusted());
+        $trustedCount = count($trustGamers);
+
         if($trustedCount === 0) {
             $this->gameStart = false;
             $this->timerStart = false;
             echo "All players have been disconnected\n";
+        } elseif ($wereHunter && $this->gameStart) {
+            $newHunter = array_rand($trustGamers);
+            $trustGamers[$newHunter]->isHunter = true;
+            $trustGamers[$newHunter]->onHold = false;
+
+            echo "hunter is here\n";
         }
     }
 
